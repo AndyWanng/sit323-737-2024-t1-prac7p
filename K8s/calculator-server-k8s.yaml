@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: calculator-server-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: calculator-server
+  template:
+    metadata:
+      labels:
+        app: calculator-server
+    spec:
+      containers:
+        - name: calculator-server
+          image: sizhewang0916/sit323-task-calculator:calculator
+          ports:
+            - containerPort: 3002
+          env:
+            - name: NODE_ENV
+              value: "production"
+            - name: CALCULATOR_PORT
+              value: "3002"
+            - name: JWT_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret
+                  key: JWT_SECRET_KEY
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: calculator-server
+spec:
+  selector:
+    app: calculator-server
+  ports:
+    - protocol: TCP
+      port: 3002
+      targetPort: 3002
